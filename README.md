@@ -4,7 +4,13 @@
 
 To be able to monitor the messages sent in a public groupchat, and immediately get rid of spam messages to not clutter up the group-chat.
 
-## 2 - Detailed Description
+## 2 - Data Description
+
+| label | whether the message is classified as `spam` or not spam, `ham`.  | 
+| :---:   | :-: |
+| message | the English message to classify in text format | 
+
+## 3 - Detailed Description
 
 **Background:**
 
