@@ -5,17 +5,40 @@ theme: uncover
 class: invert
 
 ---
-<!--_color: #2E86C1-->
 
 # **Progress Report**
 
 16/08/2022
 
 ---
+
+## Overview
+
+- Using datasets of sms messages labeled `spam` if they are considered spam, and `ham` if considered otherwise
+- Generating a model capable of classifying incoming messages to the above categories
+- Building a Telegram bot using `Pyrogram` package, to use the trained model
+- Deploying the ML model to a Telegram groupchat via the bot
+
+<style>
+{
+  font-size: 30px;
+  text-algin: left;  
+}
+
+h2{
+  color: #2E86C1
+}
+</style>
+---
+
 <style scoped>
 {
   font-size: 30px;
-  text-algin: left;
+  text-algin: left;  
+}
+
+h2{
+  color: #2E86C1
 }
 </style>
 
@@ -34,6 +57,10 @@ Taks performed include:
 <style scoped>
 {
   font-size: 30px;
+}
+
+h2{
+  color: #2E86C1
 }
 </style>
 | Phase | Date|
