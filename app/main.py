@@ -1,5 +1,9 @@
 ## import the required libraries
+from operator import le
 from pyrogram import Client, filters
+from pyrogram.types import User, MessageEntity
+from os import path
+import json
 import tensorflow as tf
 
 ## helper function for getting credentials
@@ -34,28 +38,60 @@ print('>>> Model Loaded Successfully.')
 
 #################################################
 
-## handlers for the bot
-# monitor the messages sent
-@app.on_message(filters.text)
-async def monitor(client, message):
-    
-    # model classifies commands as spam, thus we ignore them
-    if (message.text).split()[0][0] != '/':
-        # classify the incoming message as either spam or not
-        result = model.predict([message.text])
-        result = tf.squeeze(tf.round(result))
-        if result == 1:
-            name = message.from_user.first_name + ' ' + message.from_user.last_name
-            chat_id = message.chat.id
-            id = message.from_user.id
-            await message.delete()
-            await client.ban_chat_member(chat_id=chat_id, user_id=id)
-            await client.send_message(text=f"User, {name}, with ID, {id}, has been kicked out for sending spam.", chat_id=chat_id)
-        
 # commands for the bot
 @app.on_message(filters.command(['start']))
 async def commands_handler(client, message):
     message.reply('Online and working at full capacity...')
+
+## handlers for the bot
+# monitor the messages sent
+@app.on_message(filters.text)
+async def monitor(client, message):
+
+    # classify the incoming message as either spam or not
+    result = model.predict([message.text])
+    result = tf.squeeze(tf.round(result))
+    # usually spam messages are longer than 10 words + to avoid wrong cases of spam
+    if result == 1 and len(message.text.split(sep=' ')) > 10:
+        chat_id = message.chat.id
+        user_id = message.from_user.id
+        user_warnings = 0
+        kick_user = False
+        mode = 'w'
+        
+        if path.exists(f'chat{chat_id}.json'):
+            mode = 'r'
+        
+        with open(f'chat{chat_id}.json', mode) as file:
+            if mode == 'w':
+                json_object = {}
+            else:
+                json_object = json.load(file)
+            
+            if str(user_id) in list(json_object.keys()):
+                user_warnings = json_object.get(str(user_id))
+            
+            if user_warnings == 2:
+                kick_user = True
+                json_object.pop(str(user_id))
+            else:
+                user_warnings = user_warnings + 1
+                # json_object[user_id] = user_warnings
+                json_object.update({f'{user_id}': user_warnings})
+                
+        with open(f'chat{chat_id}.json', 'w') as file:
+            json_object = json.dumps(json_object)
+            file.write(json_object)
+            
+        
+        if kick_user:
+            username = message.from_user.username
+            await message.delete()
+            await client.ban_chat_member(chat_id=chat_id, user_id=user_id)
+            await client.send_message(text=f"User: {username}\nID: {user_id}\nHas been kicked out for sending spam.", chat_id=chat_id)
+        else:
+            await message.reply(f'Spam Detected.\nWarning #{user_warnings}\n3 warnings and you will be removed.')
+        
 
 
 #################################################
