@@ -1,0 +1,32 @@
+---
+title: "Capstone Report on Spam Detection Model Implemented on a Telegram Bot"
+author: "Ahmed Almohammed"
+date: "08/25/2022"
+format: html
+theme: solar
+css: styles.css
+code-fold: true
+toc: true
+jupyter: python3
+---
+
+This report illustrates the fundamental phases of the project, from data preprocessing to deployment using `pyrogram` library to build a working Telegram Bot capable of using the ML model generated to monitor the messages within a groupchat, and flag any messages that are considered potential spam.
+
+## Data Preprocessing
+
+The data for this project was gathered from 4 various sources:
+
+- [uciml](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) from Kaggle
+- [team-ai](https://www.kaggle.com/datasets/team-ai/spam-text-message-classification) from Kaggle
+- [DeshDSingh](https://github.com/DeshDSingh/SMS-SPAM-Detection/blob/master/sms_spam.csv) from GitHub
+- [sms_spam](https://huggingface.co/datasets/sms_spam) from HuggingFace Datasets
+
+
+After getting the data from their sources, they were all concatenated together, dropping the resulting duplicates, to finally be left out with a large volume of data, totalling at around `11K` examples, with the following data description:
+
+|Feature|Description|
+--------|-----------|
+message | the sms message in text form|
+label   | the classification of the message, either `spam`, or not, `ham`|
+
+However, the data was heavily imbalanced, especially in the original sources, where the data with label `ham` were by far the dominating example in the dataset.
