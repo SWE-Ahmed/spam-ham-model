@@ -88,9 +88,9 @@ async def monitor(client, message):
             username = message.from_user.username
             await message.delete()
             await client.ban_chat_member(chat_id=chat_id, user_id=user_id)
-            await client.send_message(text=f"User: {username}\nID: {user_id}\nHas been kicked out for sending spam.", chat_id=chat_id)
+            await client.send_message(text=f"User: {username}\nID: {user_id}\nHas been banned for sending potential spam.", chat_id=chat_id)
         else:
-            await message.reply(f'Spam Detected.\nWarning #{user_warnings}\n3 warnings and you will be removed.')
+            await message.reply(f'Spam Detected.\nWarning # {user_warnings}\n3 warnings and you will be removed.')
         
 
 

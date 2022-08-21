@@ -2,3 +2,4 @@
 /app/credentials.config
 /app/my_account.session
 /app/my_bot.session
+/app/chat*
