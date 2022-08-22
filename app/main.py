@@ -41,7 +41,7 @@ print('>>> Model Loaded Successfully.')
 # commands for the bot
 @app.on_message(filters.command(['start']))
 async def commands_handler(client, message):
-    message.reply('Online and working at full capacity...')
+    await message.reply('Online and working at full capacity...')
 
 ## handlers for the bot
 # monitor the messages sent
@@ -53,6 +53,7 @@ async def monitor(client, message):
     result = tf.squeeze(tf.round(result))
     # usually spam messages are longer than 10 words + to avoid wrong cases of spam
     if result == 1 and len(message.text.split(sep=' ')) > 10:
+        # store in the data of the user
         chat_id = message.chat.id
         user_id = message.from_user.id
         user_warnings = 0
@@ -61,7 +62,7 @@ async def monitor(client, message):
         
         if path.exists(f'chat{chat_id}.json'):
             mode = 'r'
-        
+        # deal with the file based on its mode (since if it doesn't exit we will create a new object)
         with open(f'chat{chat_id}.json', mode) as file:
             if mode == 'w':
                 json_object = {}
@@ -70,27 +71,29 @@ async def monitor(client, message):
             
             if str(user_id) in list(json_object.keys()):
                 user_warnings = json_object.get(str(user_id))
-            
+            # if the user has 2 warnings, then remove him/her from the file
             if user_warnings == 2:
                 kick_user = True
                 json_object.pop(str(user_id))
+            # if not, then just increment the warnings count of the user
             else:
                 user_warnings = user_warnings + 1
                 # json_object[user_id] = user_warnings
                 json_object.update({f'{user_id}': user_warnings})
-                
+        # update the file with the new values
         with open(f'chat{chat_id}.json', 'w') as file:
             json_object = json.dumps(json_object)
             file.write(json_object)
             
-        
+        # if the user exceeded 2 warnings, ban the user from the chat & delete the latest message
         if kick_user:
             username = message.from_user.username
             await message.delete()
             await client.ban_chat_member(chat_id=chat_id, user_id=user_id)
             await client.send_message(text=f"User: {username}\nID: {user_id}\nHas been banned for sending potential spam.", chat_id=chat_id)
+        # warn the user of his/her potential spam message
         else:
-            await message.reply(f'Spam Detected.\nWarning # {user_warnings}\n3 warnings and you will be removed.')
+            await message.reply(f'Potential Spam Detected.\nWarning # {user_warnings}\n3 warnings and you will be removed.')
         
 
 

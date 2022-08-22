@@ -1,0 +1,179 @@
+---
+title: "Capstone Report on Spam Detection Model Implemented on a Telegram Bot"
+author: "Ahmed Almohammed"
+date: "08/25/2022"
+format: html
+theme: sandstone
+css: styles.css
+code-fold: true
+toc: true
+jupyter: python3
+---
+
+```{python}
+#| echo: false
+#| output: false
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from datasets import load_dataset
+from imblearn.under_sampling import RandomUnderSampler
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+sms_data1 = pd.read_csv("../../data/SPAM text message 20170820 - Data.csv")
+sms_data2 = pd.read_csv("../../data/spam.csv", encoding='latin-1')
+sms_data3 = pd.DataFrame((load_dataset("sms_spam")['train']))
+sms_data4 = pd.read_csv("../../data/sms_spam.csv")
+
+# unify the features names
+sms_data1.rename({"Category": "label", "Message": "message"}, axis=1, inplace=True)
+sms_data1 = sms_data1[["message", "label"]]
+
+# unify the features names & drop unwanted features
+sms_data2.drop(["Unnamed: 2", "Unnamed: 3", "Unnamed: 4"], axis=1, inplace=True)
+sms_data2.rename({"v1" : "label", "v2" : "message"}, axis=1, inplace=True)
+sms_data2 = sms_data2[["message", "label"]]
+
+# unify the features names
+sms_data3.rename({"sms" : "message"}, axis=1, inplace=True)
+sms_data3['label'] = sms_data3['label'].apply(lambda x: "spam" if x == 1 else "ham")
+
+# unify the features names
+sms_data4.rename({"type" : "label", "text" : "message"}, axis=1, inplace=True)
+sms_data4 = sms_data4[["message", "label"]]
+
+sms_big = pd.concat([sms_data1, sms_data2, sms_data3, sms_data4], axis=0)
+sms_big.drop_duplicates(inplace=True)
+# dropping the outliers in ham label
+## getting the index of each outlier
+message_lengths = []
+for row in range(0, len(sms_big)):
+    message_lengths.append(len(sms_big.message.iloc[row]))
+sms_big['length'] = message_lengths
+indices = sms_big[sms_big.length > 700].index.values
+sms_big.drop(indices, axis=0, inplace=True)
+```
+
+
+This report illustrates the fundamental phases of the project, from data preprocessing to deployment using `pyrogram` library to build a working Telegram Bot capable of using the ML model generated to monitor the messages within a groupchat, and flag any messages that are considered potential spam.
+
+## Introduction
+
+This capstone project addresses the problem of spam messages being sent out via various users to public groupchats. A possible solution has been built in this project, in which a deep learning model was trained on sms messages, labelled as either spam or not, and then used in a Telegram bot to detect incoming spam messages in the deployed Telegram groupchats.
+
+## Data Preprocessing
+
+The data for this project was gathered from 4 various sources:
+
+- [uciml](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) from Kaggle
+- [team-ai](https://www.kaggle.com/datasets/team-ai/spam-text-message-classification) from Kaggle
+- [DeshDSingh](https://github.com/DeshDSingh/SMS-SPAM-Detection/blob/master/sms_spam.csv) from GitHub
+- [sms_spam](https://huggingface.co/datasets/sms_spam) from HuggingFace Datasets
+
+
+After getting the data from their sources, they were all concatenated together, dropping the resulting duplicates, to finally be left out with a large volume of data, totalling at around `11K` examples, with the following data description:
+
+|Feature|Description|
+|:--------|:---------:|
+message | the sms message in text form|
+label   | the classification of the message, either `spam`, or not, `ham`|
+
+However, the data was heavily imbalanced, especially in the original sources, where the data with label `ham` were by far the dominating example in the dataset. See @fig-class.
+
+```{python}
+#| label: fig-class
+#| fig-cap: "The imbalance between the 2 classes"
+
+# plot the distribution of the examples in each class
+plt.figure(figsize=(10,7))
+sns.countplot(x='label', data=sms_big)
+
+plt.title('Distribution of the Messages')
+plt.xlabel('Labels')
+plt.ylabel('Count')
+plt.show();
+```
+
+
+To solve this imbalance problem, 2 methods were tried (after performing train-test split):
+
+### Oversampling the Minority Class
+
+The idea was to use `SMOTEN` method from `imblearn` package to successfully oversample the `ham` class. Upon creating the `SMOTEN` instance, and applying it to our data sets, the classes became balanced. However, the minority class was almost three times filled with duplicates, which is extremely unwanted in our data, especially when we proceed to model development, as the model will no doubt overfit the data and will not generalize well on unseen data.
+
+As a result, the next method was tried.
+
+### Undersampling the Majority Class
+
+In performing undersampling for the majority class, we used the `RandomUnderSampler` method from `imblearn`, and then applied it on the data sets. Even though many examples from the `ham` class were truncated and left off to perform undersampling, this is still better in this case than having a `spam` class consisting of almost all duplicates.
+
+As a result, the total number of examples left went down from about `11K` to about `3K`. @fig-train and @fig-test depict the distribution of the data in train and test sets respectively.
+
+```{python}
+#| echo: false
+#| output: false
+
+unders = RandomUnderSampler(random_state=42,replacement=True)
+X = sms_big.message
+y = sms_big.label
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+```
+
+
+```{python}
+#| label: fig-train
+#| fig-cap: "The training data set"
+
+# training data after undersampling
+X_res, y_res = unders.fit_resample(np.array(X_train).reshape(-1,1), np.array(y_train).reshape(-1,1))
+X_train_res = pd.Series(X_res.reshape(-1))
+y_train_res = pd.Series(y_res.reshape(-1))
+train_df = pd.concat([X_train_res, y_train_res], axis=1)
+sns.countplot(x=1, data=train_df);
+```
+
+
+```{python}
+#| label: fig-test
+#| fig-cap: "The testing data set"
+
+# testing data after undersampling
+X_res, y_res = unders.fit_resample(np.array(X_test).reshape(-1,1), np.array(y_test).reshape(-1,1))
+X_test_res = pd.Series(X_res.reshape(-1))
+y_test_res = pd.Series(y_res.reshape(-1))
+test_df = pd.concat([X_test_res, y_test_res], axis=1)
+sns.countplot(x=1, data=test_df);
+```
+
+After splitting the data, and fixing the imbalance problem in the right way, we can proceed to the next phase of the preprocessing, whcih is Text Tokenization.
+
+### Text Tokenization
+
+Now, we must convert our categorical data, i.e the `message` and the `label`, into numerical data, as the deep learning models cannot handle text data, it needs to be converted to numbers. For the `label`, we can easily convert them to numerical data through using `LabelEncoder` frok `sklearn` package. After doing so, the result of applying the `LabelEncoder` looks like this:
+
+```{python}
+#| echo: false
+#| output: false
+
+# convert the datasets to numpy arrays
+X_train_res = X_train_res.to_numpy()
+y_train_res = y_train_res.to_numpy()
+
+X_test_res = X_test_res.to_numpy()
+y_test_res = y_test_res.to_numpy()
+```
+
+
+```{python}
+print(f"Before applying LabelEncoder: {y_train_res[:5]}")
+# apply label encoder to transform the caategorical target variable
+le = LabelEncoder()
+y_train_res = le.fit_transform(y_train_res)
+y_test_res = le.fit_transform(y_test_res)
+print(f"After applying LabelEncoder: {y_train_res[:5]}")
+```
+
+Next, we will need to first apply a Text Vectorizer on our `message` feature, and then initialize an embedding layer to be used during our experimenting with model building. The Text Vectorizer applied in this case assigns a unique number to each word in the `message` feature, i.e the text corpus.
