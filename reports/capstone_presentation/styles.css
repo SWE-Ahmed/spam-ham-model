@@ -1,0 +1,18 @@
+/* @theme capstone */
+
+@import 'default';
+
+section {
+  background: rgb(39, 183, 199);
+}
+h1{
+    color: steelblue;
+    font-size: 50px;
+}
+h2{
+  text-align: center;
+}
+p{
+  text-align: center;
+  font-size: 30px;
+}
