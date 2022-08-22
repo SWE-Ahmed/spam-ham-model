@@ -111,6 +111,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#oversampling-the-minority-class" id="toc-oversampling-the-minority-class" class="nav-link" data-scroll-target="#oversampling-the-minority-class">Oversampling the Minority Class</a></li>
   <li><a href="#undersampling-the-majority-class" id="toc-undersampling-the-majority-class" class="nav-link" data-scroll-target="#undersampling-the-majority-class">Undersampling the Majority Class</a></li>
+  <li><a href="#text-tokenization" id="toc-text-tokenization" class="nav-link" data-scroll-target="#text-tokenization">Text Tokenization</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -250,6 +251,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 3: The testing data set</figcaption><p></p>
 </figure>
 </div>
+</div>
+</div>
+<p>After splitting the data, and fixing the imbalance problem in the right way, we can proceed to the next phase of the preprocessing, whcih is Text Tokenization.</p>
+</section>
+<section id="text-tokenization" class="level3">
+<h3 class="anchored" data-anchor-id="text-tokenization">Text Tokenization</h3>
+<p>Now, we must convert our categorical data, i.e the <code>message</code> and the <code>label</code>, into numerical data, as the deep learning models cannot handle text data, it needs to be converted to numbers. For the <code>label</code>, we can easily convert them to numerical data through using <code>LabelEncoder</code> frok <code>sklearn</code> package. After doing so, the result of applying the <code>LabelEncoder</code> looks like this:</p>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Before applying LabelEncoder: </span><span class="sc">{</span>y_train_res[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># apply label encoder to transform the caategorical target variable</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>le <span class="op">=</span> LabelEncoder()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>y_train_res <span class="op">=</span> le.fit_transform(y_train_res)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>y_test_res <span class="op">=</span> le.fit_transform(y_test_res)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"After applying LabelEncoder: </span><span class="sc">{</span>y_train_res[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Before applying LabelEncoder: ['ham' 'ham' 'ham' 'ham' 'ham']
+After applying LabelEncoder: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<p>Next, we will need to first apply a Text Vectorizer on our <code>message</code> feature, and then initialize an embedding layer to be used during our experimenting with model building. The Text Vectorizer applied in this case assigns a unique number to each word (word-level tokenization) in the <code>message</code> feature, i.e the text corpus, where each word in this case is considered a token. Both the text vectorizer, along with the embedding, are used from the <code>tensorflow</code> deep learning package. After applying the text vectorization on the data, and initiating an embedded layer to be used later on, this is the result attained:</p>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Original message:</span><span class="ch">\n</span><span class="sc">{</span>X_train_res[<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">Vectorized version:</span><span class="ch">\n</span><span class="sc">{</span>text_vectorizer([X_train_res[<span class="dv">0</span>]])<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">Embedded version:</span><span class="ch">\n</span><span class="sc">{</span>embedding(text_vectorizer([X_train_res[<span class="dv">0</span>]]))<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original message:
+Siva is in hostel aha:-.
+
+
+Vectorized version:
+[[4008   11   17 1973 3294    0    0    0    0    0    0    0    0    0
+     0    0    0    0    0]]
+
+Embedded version:
+[[[ 0.02200227 -0.01599157 -0.00930061 ... -0.03341048  0.00564108
+    0.01683377]
+  [ 0.03493765  0.02574939  0.01934611 ... -0.03716522 -0.0358008
+   -0.01889654]
+  [-0.03314358 -0.03072366  0.03508325 ... -0.00579571  0.00953389
+   -0.00786076]
+  ...
+  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
+    0.01839701]
+  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
+    0.01839701]
+  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
+    0.01839701]]]</code></pre>
 </div>
 </div>
 </section>

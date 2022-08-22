@@ -21,6 +21,7 @@ from datasets import load_dataset
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.layers import TextVectorization, Embedding
 
 sms_data1 = pd.read_csv("../../data/SPAM text message 20170820 - Data.csv")
 sms_data2 = pd.read_csv("../../data/spam.csv", encoding='latin-1')
@@ -176,4 +177,32 @@ y_test_res = le.fit_transform(y_test_res)
 print(f"After applying LabelEncoder: {y_train_res[:5]}")
 ```
 
-Next, we will need to first apply a Text Vectorizer on our `message` feature, and then initialize an embedding layer to be used during our experimenting with model building. The Text Vectorizer applied in this case assigns a unique number to each word in the `message` feature, i.e the text corpus.
+Next, we will need to first apply a Text Vectorizer on our `message` feature, and then initialize an embedding layer to be used during our experimenting with model building. The Text Vectorizer applied in this case assigns a unique number to each word (word-level tokenization) in the `message` feature, i.e the text corpus, where each word in this case is considered a token. Both the text vectorizer, along with the embedding, are used from the `tensorflow` deep learning package. After applying the text vectorization on the data, and initiating an embedded layer to be used later on, this is the result attained:
+
+```{python}
+#| echo: false
+#| output: false
+
+# create a text vectorization layer
+# notice: the hyperparameters in this case have been hardcoded. You can see the original variables in the raw file.
+text_vectorizer = TextVectorization(max_tokens=10000, 
+                                    standardize="lower_and_strip_punctuation", 
+                                    split="whitespace", 
+                                    ngrams=None, 
+                                    output_mode="int",
+                                    output_sequence_length=19)
+
+# apply it to our training set
+text_vectorizer.adapt(X_train_res)
+
+# initialize messages embeddings
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+```
+
+```{python}
+print(f"Original message:\n{X_train_res[0]}\n\nVectorized version:\n{text_vectorizer([X_train_res[0]])}\n\nEmbedded version:\n{embedding(text_vectorizer([X_train_res[0]]))}")
+```
+
