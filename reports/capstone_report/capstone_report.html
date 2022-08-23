@@ -93,6 +93,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="capstone_report_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="capstone_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="capstone_report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -113,6 +116,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#undersampling-the-majority-class" id="toc-undersampling-the-majority-class" class="nav-link" data-scroll-target="#undersampling-the-majority-class">Undersampling the Majority Class</a></li>
   <li><a href="#text-tokenization" id="toc-text-tokenization" class="nav-link" data-scroll-target="#text-tokenization">Text Tokenization</a></li>
   </ul></li>
+  <li><a href="#model-development" id="toc-model-development" class="nav-link" data-scroll-target="#model-development">Model Development</a>
+  <ul class="collapse">
+  <li><a href="#model-0-baseline-model" id="toc-model-0-baseline-model" class="nav-link" data-scroll-target="#model-0-baseline-model">Model 0: Baseline Model</a></li>
+  <li><a href="#model-1-simple-deep-model" id="toc-model-1-simple-deep-model" class="nav-link" data-scroll-target="#model-1-simple-deep-model">Model 1: Simple Deep Model</a></li>
+  <li><a href="#model-2-deep-model-with-lstm" id="toc-model-2-deep-model-with-lstm" class="nav-link" data-scroll-target="#model-2-deep-model-with-lstm">Model 2: Deep Model with LSTM</a></li>
+  <li><a href="#model-3-deep-model-with-gru" id="toc-model-3-deep-model-with-gru" class="nav-link" data-scroll-target="#model-3-deep-model-with-gru">Model 3: Deep Model with GRU</a></li>
+  <li><a href="#model-4-deep-model-with-brnn" id="toc-model-4-deep-model-with-brnn" class="nav-link" data-scroll-target="#model-4-deep-model-with-brnn">Model 4: Deep Model with BRNN</a></li>
+  <li><a href="#model-5-deep-model-with-conv1d" id="toc-model-5-deep-model-with-conv1d" class="nav-link" data-scroll-target="#model-5-deep-model-with-conv1d">Model 5: Deep Model with Conv1D</a></li>
+  <li><a href="#model-6-deep-model-with-modifications" id="toc-model-6-deep-model-with-modifications" class="nav-link" data-scroll-target="#model-6-deep-model-with-modifications">Model 6: Deep Model with Modifications</a></li>
+  <li><a href="#model-conclusion" id="toc-model-conclusion" class="nav-link" data-scroll-target="#model-conclusion">Model Conclusion</a></li>
+  </ul></li>
+  <li><a href="#model-deployment" id="toc-model-deployment" class="nav-link" data-scroll-target="#model-deployment">Model Deployment</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </div>
@@ -289,22 +305,824 @@ Vectorized version:
      0    0    0    0    0]]
 
 Embedded version:
-[[[ 0.02200227 -0.01599157 -0.00930061 ... -0.03341048  0.00564108
-    0.01683377]
-  [ 0.03493765  0.02574939  0.01934611 ... -0.03716522 -0.0358008
-   -0.01889654]
-  [-0.03314358 -0.03072366  0.03508325 ... -0.00579571  0.00953389
-   -0.00786076]
+[[[ 0.04898497 -0.01979478  0.02217828 ... -0.0048638   0.03710017
+   -0.0137341 ]
+  [-0.03315722  0.01505386 -0.00147885 ...  0.0020563   0.00657374
+   -0.00327561]
+  [-0.02772429 -0.02913868 -0.00407239 ...  0.0012068   0.04175544
+   -0.03214341]
   ...
-  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
-    0.01839701]
-  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
-    0.01839701]
-  [-0.01161405 -0.01339437  0.04116846 ... -0.01781211 -0.03352024
-    0.01839701]]]</code></pre>
+  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
+   -0.00786297]
+  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
+   -0.00786297]
+  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
+   -0.00786297]]]</code></pre>
 </div>
 </div>
+<p>Finally, we can now proceed to model development, as we have completed all the preprocessing necessary on our data.</p>
 </section>
+</section>
+<section id="model-development" class="level2">
+<h2 class="anchored" data-anchor-id="model-development">Model Development</h2>
+<p>In this phase, several deep learning model architectures were tested out on the training and test sets, including a baseline model built using a shallow learning algorithm. Because of the low number of training examples due to the heavily imbalanced problem and the undersampling made, having a high accuracy did not necessarily indicate that the model will perform well on custom data, i.e it wont necessary generalize well to unseen messages. As a result, I have created a second metric consisting of sample custom data to also use in finding the optimal model in this scenario.</p>
+<p>Below are the architectures used for each model, and a brief overview of why it was tested out:</p>
+<section id="model-0-baseline-model" class="level3">
+<h3 class="anchored" data-anchor-id="model-0-baseline-model">Model 0: Baseline Model</h3>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_0 <span class="op">=</span> Pipeline([</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'tfid'</span>, TfidfVectorizer()),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'mnb'</span>, MultinomialNB())</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>model_0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('tfid', TfidfVectorizer()), ('mnb', MultinomialNB())])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox"><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('tfid', TfidfVectorizer()), ('mnb', MultinomialNB())])</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox"><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">TfidfVectorizer</label><div class="sk-toggleable__content"><pre>TfidfVectorizer()</pre></div></div></div><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox"><label for="sk-estimator-id-3" class="sk-toggleable__label sk-toggleable__label-arrow">MultinomialNB</label><div class="sk-toggleable__content"><pre>MultinomialNB()</pre></div></div></div></div></div></div></div>
+</div>
+</div>
+<p>This model acts as the starting ground for model development, as I try to better develop a deep neural network architecture to beat it. It uses <code>TfidVectorizer</code> (term frequency-inverse document frequency) method to map the words in our messages to unique numbers. Then it passes the output to <code>MultinomialNB</code>, which is scikit-learn go to for classification problems regarding text data.</p>
+</section>
+<section id="model-1-simple-deep-model" class="level3">
+<h3 class="anchored" data-anchor-id="model-1-simple-deep-model">Model 1: Simple Deep Model</h3>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> GlobalAvgPool1D()(x)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>model_1 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'simple_model_1'</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>model_1.<span class="bu">compile</span>(</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span> Adam(),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># get a summary of the model</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>model_1.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "simple_model_1"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_1 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding (Embedding)       (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> global_average_pooling1d (G  (None, 128)              0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> lobalAveragePooling1D)                                          </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense (Dense)               (None, 1)                 129       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 721,025</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 721,025</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>This model starts off easy with only the usual text vectorization and embedding layers, and then a <code>GlobalAvgPool1D</code> layer to reduce the size of the representation and detect more robust features.</p>
+</section>
+<section id="model-2-deep-model-with-lstm" class="level3">
+<h3 class="anchored" data-anchor-id="model-2-deep-model-with-lstm">Model 2: Deep Model with LSTM</h3>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create model_2 embedding layer</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> Embedding(input_dim<span class="op">=</span><span class="bu">len</span>(text_vectorizer.get_vocabulary()), </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                             output_dim<span class="op">=</span><span class="dv">128</span>, </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                             embeddings_initializer<span class="op">=</span><span class="st">"uniform"</span>, </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                             input_length<span class="op">=</span><span class="dv">19</span>) </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> LSTM(<span class="dv">128</span>)(x)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>model_2 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'lstm_model_2'</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>model_2.<span class="bu">compile</span>(</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span>Adam(),</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of the model</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>model_2.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "lstm_model_2"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_2 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding_1 (Embedding)     (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> lstm (LSTM)                 (None, 128)               131584    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_1 (Dense)             (None, 1)                 129       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 852,609</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 852,609</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>We must redefine a new embedding layer to each model, as the embedding layer is considered a learned representation, where each model might have different representation for it based on its training. In this model, we used the first type of RNN, and LSTM layer (Long-Shot-Term-Memory). Its a sophisticated RNN that uses 3 main components in its computations, namely an input gate, update gate and forget gate. Together, these tend to produce accurate results for long sequences (as in our case)</p>
+</section>
+<section id="model-3-deep-model-with-gru" class="level3">
+<h3 class="anchored" data-anchor-id="model-3-deep-model-with-gru">Model 3: Deep Model with GRU</h3>
+<div class="cell" data-execution_count="13">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create model_3 embedding layer</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> Embedding(input_dim<span class="op">=</span><span class="bu">len</span>(text_vectorizer.get_vocabulary()), </span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>                             output_dim<span class="op">=</span><span class="dv">128</span>, </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>                             embeddings_initializer<span class="op">=</span><span class="st">"uniform"</span>, </span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>                             input_length<span class="op">=</span><span class="dv">19</span>) </span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> GRU(<span class="dv">128</span>)(x)</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>model_3 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'gru_model_3'</span>)</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>model_3.<span class="bu">compile</span>(</span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span>Adam(),</span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-21"><a href="#cb52-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-22"><a href="#cb52-22" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of model_3</span></span>
+<span id="cb52-23"><a href="#cb52-23" aria-hidden="true" tabindex="-1"></a>model_3.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "gru_model_3"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_3 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding_2 (Embedding)     (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> gru (GRU)                   (None, 128)               99072     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_2 (Dense)             (None, 1)                 129       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 820,097</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 820,097</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>We also tried the second type of an RNN, namely GRU (Gated Recurrent Network). This type is not as computationaly costly as the LSTM, as it tends to have lower parameters due to its less component architecture under the hood. Even though it uses less memory and is faster than LSTM, it might not perform so well in this case.</p>
+</section>
+<section id="model-4-deep-model-with-brnn" class="level3">
+<h3 class="anchored" data-anchor-id="model-4-deep-model-with-brnn">Model 4: Deep Model with BRNN</h3>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create model_4 embedding layer</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> Embedding(input_dim<span class="op">=</span><span class="bu">len</span>(text_vectorizer.get_vocabulary()), </span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>                             output_dim<span class="op">=</span><span class="dv">128</span>, </span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>                             embeddings_initializer<span class="op">=</span><span class="st">"uniform"</span>, </span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>                             input_length<span class="op">=</span><span class="dv">19</span>) </span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Bidirectional(LSTM(<span class="dv">128</span>))(x)</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>model_4 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'brnn_model_4'</span>)</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>model_4.<span class="bu">compile</span>(</span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span>Adam(),</span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of model</span></span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>model_4.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "brnn_model_4"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_4 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding_3 (Embedding)     (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> bidirectional (Bidirectiona  (None, 256)              263168    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> l)                                                              </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_3 (Dense)             (None, 1)                 257       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 984,321</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 984,321</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>Instead of only making the training process unidirectional, we tested out on making it bidirectional, to make the alogirthm or the the network detect more features out of the data. Its use was especially intended as it can learn from the context of the message, as we think it might affect the classification of the message.</p>
+</section>
+<section id="model-5-deep-model-with-conv1d" class="level3">
+<h3 class="anchored" data-anchor-id="model-5-deep-model-with-conv1d">Model 5: Deep Model with Conv1D</h3>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create model_5 embedding layer</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> Embedding(input_dim<span class="op">=</span><span class="bu">len</span>(text_vectorizer.get_vocabulary()), </span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>                             output_dim<span class="op">=</span><span class="dv">128</span>, </span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>                             embeddings_initializer<span class="op">=</span><span class="st">"uniform"</span>, </span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>                             input_length<span class="op">=</span><span class="dv">19</span>) </span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb95-10"><a href="#cb95-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Conv1D(filters<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">5</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb95-11"><a href="#cb95-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> GlobalMaxPool1D()(x)</span>
+<span id="cb95-12"><a href="#cb95-12" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">32</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb95-13"><a href="#cb95-13" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb95-14"><a href="#cb95-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-15"><a href="#cb95-15" aria-hidden="true" tabindex="-1"></a>model_5 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'conv1d_model_5'</span>)</span>
+<span id="cb95-16"><a href="#cb95-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-17"><a href="#cb95-17" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb95-18"><a href="#cb95-18" aria-hidden="true" tabindex="-1"></a>model_5.<span class="bu">compile</span>(</span>
+<span id="cb95-19"><a href="#cb95-19" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb95-20"><a href="#cb95-20" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span>Adam(),</span>
+<span id="cb95-21"><a href="#cb95-21" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb95-22"><a href="#cb95-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb95-23"><a href="#cb95-23" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of model</span></span>
+<span id="cb95-24"><a href="#cb95-24" aria-hidden="true" tabindex="-1"></a>model_5.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "conv1d_model_5"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_5 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding_4 (Embedding)     (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> conv1d (Conv1D)             (None, 15, 32)            20512     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> global_max_pooling1d (Globa  (None, 32)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> lMaxPooling1D)                                                  </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_4 (Dense)             (None, 32)                1056      </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_5 (Dense)             (None, 1)                 33        </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 742,497</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 742,497</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>The use of <code>Conv1D</code> layer is of a great benefit to the training of the model, as this layer allows our network to capture the spatial data from our 1 dimensional sequences of messages, in which other RNN layers were unable to do so. Through this layer, we can utilize the power of convolutional layers used in effective computer vision problems.</p>
+</section>
+<section id="model-6-deep-model-with-modifications" class="level3">
+<h3 class="anchored" data-anchor-id="model-6-deep-model-with-modifications">Model 6: Deep Model with Modifications</h3>
+<div class="cell" data-execution_count="16">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create model_6 embedding layer</span></span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="op">=</span> Embedding(input_dim<span class="op">=</span><span class="bu">len</span>(text_vectorizer.get_vocabulary()), </span>
+<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>                             output_dim<span class="op">=</span><span class="dv">128</span>, </span>
+<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>                             embeddings_initializer<span class="op">=</span><span class="st">"uniform"</span>, </span>
+<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>                             input_length<span class="op">=</span><span class="dv">19</span>) </span>
+<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a><span class="co"># build the model</span></span>
+<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="dv">1</span>,), dtype<span class="op">=</span><span class="st">'string'</span>)</span>
+<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> text_vectorizer(inputs)</span>
+<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> embedding(x)</span>
+<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Bidirectional(LSTM(<span class="dv">256</span>))(x)</span>
+<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Reshape((<span class="dv">512</span>,<span class="dv">1</span>))(x)</span>
+<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Conv1D(filters<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">5</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> GlobalMaxPool1D()(x)</span>
+<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">32</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dropout(<span class="fl">0.2</span>)(x)</span>
+<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">16</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> Dense(units<span class="op">=</span><span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>)(x)</span>
+<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a>model_6 <span class="op">=</span> Model(inputs, outputs, name<span class="op">=</span><span class="st">'mods_model_6'</span>)</span>
+<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a>model_6.<span class="bu">compile</span>(</span>
+<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>    loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>,</span>
+<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="op">=</span>Adam(),</span>
+<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[<span class="st">'accuracy'</span>]</span>
+<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of model</span></span>
+<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a>model_6.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "mods_model_6"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Layer (type)                Output Shape              Param #   </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> input_6 (InputLayer)        [(None, 1)]               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> text_vectorization (TextVec  (None, 19)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> torization)                                                     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> embedding_5 (Embedding)     (None, 19, 128)           720896    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> bidirectional_1 (Bidirectio  (None, 512)              788480    </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> nal)                                                            </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> reshape (Reshape)           (None, 512, 1)            0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> conv1d_1 (Conv1D)           (None, 508, 32)           192       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> global_max_pooling1d_1 (Glo  (None, 32)               0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> balMaxPooling1D)                                                </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_6 (Dense)             (None, 32)                1056      </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dropout (Dropout)           (None, 32)                0         </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_7 (Dense)             (None, 16)                528       </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> dense_8 (Dense)             (None, 1)                 17        </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total params: 1,511,169</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Trainable params: 1,511,169</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Non-trainable params: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________________</code></pre>
+</div>
+</div>
+<p>In this final model, we implemented a modified deep neural network architecture based on our experimenting with the above models and their components. After the ususal text vectorization and embedding layers, the output gets passed to a bidirectional <code>LSTM</code> layer to accurately detect features from the sequence of messages in both directions and based on the context of them in general. It then gets reshaped to fit into a <code>Conv1D</code> layer to further detect more features on top of the <code>LSTM</code> ones, through the power of convolotions. It then outputs it to a combination of max pooling and fully connected layers to reduce representation size and also a <code>Dropout</code> layer for regularization.</p>
+</section>
+<section id="model-conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="model-conclusion">Model Conclusion</h3>
+<p>Based on the above models, each model was trained on the same metrics and hyperparameters to ensure fairness for all. But like we mentioned above, becuase of the low data, the accuracy and f1-score metrics were not really helpful. Several models tend to attains almost similar results, while others unfortunately overfitted the data. With the custom data used as an additional metric, the results were as follows:</p>
+
+<table class="table table-hover">
+<thead>
+<tr>
+<th scope="col">
+Model
+</th>
+<th scope="col">
+Accuracy
+</th>
+<th scope="col">
+F1-Score
+</th>
+<th scope="col">
+Custom Data
+</th>
+</tr>
+</thead>
+<tbody>
+
+<tr class="table-info">
+<th scope="row">
+Model 0
+</th>
+<td>
+0.9599
+</td>
+<td>
+0.9599
+</td>
+<td>
+0.7500
+</td>
+</tr>
+
+<tr class="table-info">
+<th scope="row">
+Model 1
+</th>
+<td>
+0.9599
+</td>
+<td>
+0.9598
+</td>
+<td>
+0.5000
+</td>
+</tr>
+
+<tr class="table-info">
+<th scope="row">
+Model 2
+</th>
+<td>
+0.9775
+</td>
+<td>
+0.9775
+</td>
+<td>
+0.7500
+</td>
+</tr>
+
+<tr class="table-info">
+<th scope="row">
+Model 3
+</th>
+<td>
+0.9855
+</td>
+<td>
+0.9855
+</td>
+<td>
+0.7500
+</td>
+</tr>
+
+<tr class="table-info">
+<th scope="row">
+Model 4
+</th>
+<td>
+0.9727
+</td>
+<td>
+0.9727
+</td>
+<td>
+0.7500
+</td>
+</tr>
+
+<tr class="table-info">
+<th scope="row">
+Model 5
+</th>
+<td>
+0.9839
+</td>
+<td>
+0.9839
+</td>
+<td>
+0.5000
+</td>
+</tr>
+
+<tr class="table-success">
+<th scope="row">
+Model 6
+</th>
+<td>
+0.9743
+</td>
+<td>
+0.9743
+</td>
+<td>
+1.000
+</td>
+</tr>
+</tbody>
+
+</table>
+<p>Based on the above results, we concluded that <code>model_6</code> is the optimal model for this case, as it can generalize well to unseen data, both to the custom data here and other ones used in the raw notebook.</p>
+<p>Now, the model is ready to be deployed.</p>
+</section>
+</section>
+<section id="model-deployment" class="level2">
+<h2 class="anchored" data-anchor-id="model-deployment">Model Deployment</h2>
+<p>After the model development and experimenting with the various layers, we finally have a good model to use in our intended case, and that is deploy it to a Telegram groupchat and see it working in action. The following points illustrate the main steps taken into deploying a fully working Telegram bot capable of utilizing our model’s predictions in detecting spam:</p>
+<ol type="1">
+<li>Save the model</li>
+</ol>
+<p>The model was saved through the use of <code>TensorFlow</code>’s <code>save_model</code> method, which saves all the needed data for the model to work successfully when loaded in a separate folder.</p>
+<ol start="2" type="1">
+<li>Initializing a Telegram Bot with the help of <code>Pyrogram</code></li>
+</ol>
+<p>For this part, the Telegram bot was created with the help of several functions from the <code>pyrogram</code> package, which included</p>
+<ul>
+<li>Getting the api configuration keys</li>
+<li>Creating a bot account from the <code>BotFather</code> in Telegram</li>
+<li>Setting a user session along with a Bot session</li>
+<li>Adding handlers for required functionalities for the bot</li>
+</ul>
+<ol start="3" type="1">
+<li>Load the model and register it to a handler</li>
+</ol>
+<p>The saved model can be easily loaded up and get it ready for prediction through <code>TensorFlow</code>’s <code>load_model</code> method. After loading the model with its weights and data, a handler function is created to monitor the messages sent in the groupchat in the following way:</p>
+<ul>
+<li><p>If the message is detected as potential spam, then the user gets a warning and the message is flagged as potential spam. Once reaching a 3rd warning, the last potential spam message will be deleted, and the user will be banned.</p></li>
+<li><p>If the message is detected as <code>ham</code> (not spam), then the bot just ignores it.</p></li>
+</ul>
+<p>For more info on the deployment implementation, see the <code>app</code> directory.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In conclusion,</p>
 </section>
 
 </main>

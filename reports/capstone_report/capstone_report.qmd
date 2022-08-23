@@ -21,7 +21,12 @@ from datasets import load_dataset
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.layers import TextVectorization, Embedding
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+from tensorflow.keras import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import TextVectorization, Embedding, Flatten, Dense, Dropout, LSTM, GRU, Conv1D, Input, GlobalAvgPool1D, GlobalMaxPool1D, Bidirectional, Reshape
 
 sms_data1 = pd.read_csv("../../data/SPAM text message 20170820 - Data.csv")
 sms_data2 = pd.read_csv("../../data/spam.csv", encoding='latin-1')
@@ -56,6 +61,7 @@ sms_big['length'] = message_lengths
 indices = sms_big[sms_big.length > 700].index.values
 sms_big.drop(indices, axis=0, inplace=True)
 ```
+
 
 
 This report illustrates the fundamental phases of the project, from data preprocessing to deployment using `pyrogram` library to build a working Telegram Bot capable of using the ML model generated to monitor the messages within a groupchat, and flag any messages that are considered potential spam.
@@ -206,3 +212,300 @@ embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()),
 print(f"Original message:\n{X_train_res[0]}\n\nVectorized version:\n{text_vectorizer([X_train_res[0]])}\n\nEmbedded version:\n{embedding(text_vectorizer([X_train_res[0]]))}")
 ```
 
+Finally, we can now proceed to model development, as we have completed all the preprocessing necessary on our data.
+
+## Model Development
+
+In this phase, several deep learning model architectures were tested out on the training and test sets, including a baseline model built using a shallow learning algorithm. Because of the low number of training examples due to the heavily imbalanced problem and the undersampling made, having a high accuracy did not necessarily indicate that the model will perform well on custom data, i.e it wont necessary generalize well to unseen messages. As a result, I have created a second metric consisting of sample custom data to also use in finding the optimal model in this scenario.
+
+Below are the architectures used for each model, and a brief overview of why it was tested out:
+
+### Model 0: Baseline Model
+
+```{python}
+model_0 = Pipeline([
+    ('tfid', TfidfVectorizer()),
+    ('mnb', MultinomialNB())
+])
+model_0
+```
+
+This model acts as the starting ground for model development, as I try to better develop a deep neural network architecture to beat it. It uses `TfidVectorizer` (term frequency-inverse document frequency) method to map the words in our messages to unique numbers. Then it passes the output to `MultinomialNB`, which is scikit-learn go to for classification problems regarding text data.
+
+### Model 1: Simple Deep Model
+
+```{python}
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = GlobalAvgPool1D()(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_1 = Model(inputs, outputs, name='simple_model_1')
+
+# compile the model
+model_1.compile(
+    loss='binary_crossentropy',
+    optimizer= Adam(),
+    metrics=['accuracy']
+)
+
+# get a summary of the model
+model_1.summary()
+```
+
+This model starts off easy with only the usual text vectorization and embedding layers, and then a `GlobalAvgPool1D` layer to reduce the size of the representation and detect more robust features.
+
+### Model 2: Deep Model with LSTM
+
+```{python}
+
+# create model_2 embedding layer
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = LSTM(128)(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_2 = Model(inputs, outputs, name='lstm_model_2')
+
+# compile the model
+model_2.compile(
+    loss='binary_crossentropy',
+    optimizer=Adam(),
+    metrics=['accuracy']
+)
+
+# summary of the model
+model_2.summary()
+```
+
+We must redefine a new embedding layer to each model, as the embedding layer is considered a learned representation, where each model might have different representation for it based on its training. In this model, we used the first type of RNN, and LSTM layer (Long-Shot-Term-Memory). Its a sophisticated RNN that uses 3 main components in its computations, namely an input gate, update gate and forget gate. Together, these tend to produce accurate results for long sequences (as in our case)
+
+### Model 3: Deep Model with GRU
+
+```{python}
+
+# create model_3 embedding layer
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = GRU(128)(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_3 = Model(inputs, outputs, name='gru_model_3')
+
+# compile the model
+model_3.compile(
+    loss='binary_crossentropy',
+    optimizer=Adam(),
+    metrics=['accuracy']
+)
+
+# summary of model_3
+model_3.summary()
+```
+
+We also tried the second type of an RNN, namely GRU (Gated Recurrent Network). This type is not as computationaly costly as the LSTM, as it tends to have lower parameters due to its less component architecture under the hood. Even though it uses less memory and is faster than LSTM, it might not perform so well in this case.
+
+### Model 4: Deep Model with BRNN
+
+```{python}
+# create model_4 embedding layer
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = Bidirectional(LSTM(128))(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_4 = Model(inputs, outputs, name='brnn_model_4')
+
+# compile the model
+model_4.compile(
+    loss='binary_crossentropy',
+    optimizer=Adam(),
+    metrics=['accuracy']
+)
+# summary of model
+model_4.summary()
+```
+
+Instead of only making the training process unidirectional, we tested out on making it bidirectional, to make the alogirthm or the the network detect more features out of the data. Its use was especially intended as it can learn from the context of the message, as we think it might affect the classification of the message.
+
+### Model 5: Deep Model with Conv1D
+
+```{python}
+
+# create model_5 embedding layer
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = Conv1D(filters=32, kernel_size=5, activation='relu')(x)
+x = GlobalMaxPool1D()(x)
+x = Dense(units=32, activation='relu')(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_5 = Model(inputs, outputs, name='conv1d_model_5')
+
+# compile the model
+model_5.compile(
+    loss='binary_crossentropy',
+    optimizer=Adam(),
+    metrics=['accuracy']
+)
+# summary of model
+model_5.summary()
+```
+
+The use of `Conv1D` layer is of a great benefit to the training of the model, as this layer allows our network to capture the spatial data from our 1 dimensional sequences of messages, in which other RNN layers were unable to do so. Through this layer, we can utilize the power of convolutional layers used in effective computer vision problems.
+
+### Model 6: Deep Model with Modifications
+
+```{python}
+
+# create model_6 embedding layer
+embedding = Embedding(input_dim=len(text_vectorizer.get_vocabulary()), 
+                             output_dim=128, 
+                             embeddings_initializer="uniform", 
+                             input_length=19) 
+# build the model
+inputs = Input(shape=(1,), dtype='string')
+x = text_vectorizer(inputs)
+x = embedding(x)
+x = Bidirectional(LSTM(256))(x)
+x = Reshape((512,1))(x)
+x = Conv1D(filters=32, kernel_size=5, activation='relu')(x)
+x = GlobalMaxPool1D()(x)
+x = Dense(units=32, activation='relu')(x)
+x = Dropout(0.2)(x)
+x = Dense(units=16, activation='relu')(x)
+outputs = Dense(units=1, activation='sigmoid')(x)
+
+model_6 = Model(inputs, outputs, name='mods_model_6')
+
+# compile the model
+model_6.compile(
+    loss='binary_crossentropy',
+    optimizer=Adam(),
+    metrics=['accuracy']
+)
+# summary of model
+model_6.summary()
+```
+
+In this final model, we implemented a modified deep neural network architecture based on our experimenting with the above models and their components. After the ususal text vectorization and embedding layers, the output gets passed to a bidirectional `LSTM` layer to accurately detect features from the sequence of messages in both directions and based on the context of them in general. It then gets reshaped to fit into a `Conv1D` layer to further detect more features on top of the `LSTM` ones, through the power of convolotions. It then outputs it to a combination of max pooling and fully connected layers to reduce representation size and also a `Dropout` layer for regularization.
+
+### Model Conclusion
+
+Based on the above models, each model was trained on the same metrics and hyperparameters to ensure fairness for all. But like we mentioned above, becuase of the low data, the accuracy and f1-score metrics were not really helpful. Several models tend to attains almost similar results, while others unfortunately overfitted the data. With the custom data used as an additional metric, the results were as follows:
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Model</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">F1-Score</th>
+      <th scope="col">Custom Data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-info">
+      <th scope="row">Model 0</th>
+      <td>0.9599</td>
+      <td>0.9599</td>
+      <td>0.7500</td>
+    </tr>
+    <tr class="table-info">
+      <th scope="row">Model 1</th>
+      <td>0.9599</td>
+      <td>0.9598</td>
+      <td>0.5000</td>
+    </tr>
+    <tr class="table-info">
+      <th scope="row">Model 2</th>
+      <td>0.9775</td>
+      <td>0.9775</td>
+      <td>0.7500</td>
+    </tr>
+    <tr class="table-info">
+      <th scope="row">Model 3</th>
+      <td>0.9855</td>
+      <td>0.9855</td>
+      <td>0.7500</td>
+    </tr>
+    <tr class="table-info">
+      <th scope="row">Model 4</th>
+      <td>0.9727</td>
+      <td>0.9727</td>
+      <td>0.7500</td>
+    </tr>
+    <tr class="table-info">
+      <th scope="row">Model 5</th>
+      <td>0.9839</td>
+      <td>0.9839</td>
+      <td>0.5000</td>
+    </tr>
+    <tr class="table-success">
+      <th scope="row">Model 6</th>
+      <td>0.9743</td>
+      <td>0.9743</td>
+      <td>1.000</td>
+    </tr>
+  </tbody>
+</table>
+
+Based on the above results, we concluded that `model_6` is the optimal model for this case, as it can generalize well to unseen data, both to the custom data here and other ones used in the raw notebook.
+
+Now, the model is ready to be deployed.
+
+## Model Deployment
+
+After the model development and experimenting with the various layers, we finally have a good model to use in our intended case, and that is deploy it to a Telegram groupchat and see it working in action. The following points illustrate the main steps taken into deploying a fully working Telegram bot capable of utilizing our model's predictions in detecting spam:
+
+1. Save the model
+
+The model was saved through the use of `TensorFlow`'s `save_model` method, which saves all the needed data for the model to work successfully when loaded in a separate folder.
+
+2. Initializing a Telegram Bot with the help of `Pyrogram`
+
+For this part, the Telegram bot was created with the help of several functions from the `pyrogram` package, which included
+
+- Getting the api configuration keys
+- Creating a bot account from the `BotFather` in Telegram
+- Setting a user session along with a Bot session
+- Adding handlers for required functionalities for the bot
+
+3. Load the model and register it to a handler
+
+The saved model can be easily loaded up and get it ready for prediction through `TensorFlow`'s `load_model` method. After loading the model with its weights and data, a handler function is created to monitor the messages sent in the groupchat in the following way:
+
+- If the message is detected as potential spam, then the user gets a warning and the message is flagged as potential spam. Once reaching a 3rd warning, the last potential spam message will be deleted, and the user will be banned.
+
+- If the message is detected as `ham` (not spam), then the bot just ignores it.
+
+For more info on the deployment implementation, see the `app` directory.
+
+## Conclusion
+
+In conclusion, 
