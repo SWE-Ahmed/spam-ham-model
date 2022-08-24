@@ -1,6 +1,6 @@
 # Messages Monitoring Model Capable of Detecting and Deleting Spam in Public Telegram Group Chats
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png)
+![bg 25%](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png)
 
 ## Repository Structure
 ```
@@ -14,12 +14,12 @@
 │   ├── spam.csv
 ├── model
 │   ├── spam_detection_model
-│       ├── assets
-│       ├── variables
-│           ├── variables.data-00000-of-00001
-│           ├── variables.index
-│       ├── keras_metadata.pb
-│       ├── saved_model.pb
+│   │   ├── assets
+│   │   ├── variables
+│   │       ├── variables.data-00000-of-00001
+│   │       ├── variables.index
+│   │   ├── keras_metadata.pb
+│   │   ├── saved_model.pb
 │   ├── model.png
 │   ├── spam_ham_model.ipynb
 ├── presentations
@@ -27,13 +27,14 @@
 │   ├── capstone_presentation.pdf
 ├── reports
 │   ├── capstone_report
-│       ├── capstone_report_files
-│       ├── capstone_report.html
-│       ├── capstone_report.qmd
-│       ├── styles.css
+│   │   ├── capstone_report_files
+│   │   ├── capstone_report.html
+│   │   ├── capstone_report.qmd
+│   │   ├── styles.css
 │   ├── progress_report
 │       ├── progress_report.md
 │       ├── progress_report.pdf
+.
 ```
 
 ## Project Description
@@ -48,6 +49,6 @@ As public group-chats become larger and larger, they become a spammer’s dream.
 
 ## Data Description
 
-| :---:   | :-: |
 | label | whether the message is classified as `spam` or not spam, `ham`|
+| :---:   | :-: |
 | message | the English message to classify in text format |
