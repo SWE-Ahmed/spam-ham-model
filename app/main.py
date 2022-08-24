@@ -39,7 +39,7 @@ print('>>> Model Loaded Successfully.')
 #################################################
 
 # commands for the bot
-@app.on_message(filters.command(['start']))
+@app.on_message(filters.command(['status']))
 async def commands_handler(client, message):
     await message.reply('Online and working at full capacity...')
 
