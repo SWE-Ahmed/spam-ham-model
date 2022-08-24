@@ -1,36 +1,52 @@
 # Messages Monitoring Model Capable of Detecting and Deleting Spam in Public Telegram Group Chats
 
-## 1 - Primary Concept
+[bg 50](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png)
 
-To be able to monitor the messages sent in a public groupchat, and immediately get rid of spam messages to not clutter up the group-chat.
+## Repository Structure
 
-## 2 - Data Description
+.
+├── README.md
+├── app
+│   ├── main.py
+├── data
+│   ├── sms_spam.csv
+│   ├── SPAM text message 20170820 - Data.csv
+│   ├── spam.csv
+├── model
+│   ├── spam_detection_model
+│       ├── assets
+│       ├── variables
+│           ├── variables.data-00000-of-00001
+│           ├── variables.index
+│       ├── keras_metadata.pb
+│       ├── saved_model.pb
+│   ├── model.png
+│   ├── spam_ham_model.ipynb
+├── presentations
+│   ├── capstone_presentation.key
+│   ├── capstone_presentation.pdf
+├── reports
+│   ├── capstone_report
+│       ├── capstone_report_files
+│       ├── capstone_report.html
+│       ├── capstone_report.qmd
+│       ├── styles.css
+│   ├── progress_report
+│       ├── progress_report.md
+│       ├── progress_report.pdf
 
-| label | whether the message is classified as `spam` or not spam, `ham`.  | 
-| :---:   | :-: |
-| message | the English message to classify in text format | 
+## Project Description
 
-## 3 - Detailed Description
+This project addresses the problem of spam messages being sent out via various users to public groupchats. A possible solution has been built in this project, in which a deep learning model was trained on sms messages, labelled as either spam or not, and then used in a Telegram bot to detect incoming spam messages in the deployed Telegram groupchats.
+
+## Detailed Description
 
 **Background:**
 
 As public group-chats become larger and larger, they become a spammer’s dream. These spammers try to utilise such heavily populated group-chats to either mislead others with false websites, accounts or services. Instead of manually looking out for such messages within a group-chat, we can deploy a ML model capable of detecting these messages and deleting them as soon as they are sent. I will be able to deploy it to an active telegram bot that I can build using the `Pyrogram` package in Python, and then just program my bot to activate the trained model on incoming messages when I add it to a group-chat.
 
-**What will you actually do?**
+## Data Description
 
-- Merge datasets together to increase our inventory of training data for this model
-- Examine and become one with the dataset by investigating the structure of the messages
-- Clean the dataset and preprocess it
-- Experiment with various NLP models and evaluate them along the way to come up with an accurate one
-- Test the final chosen model on custom data
-- Build a Telegram Bot from the Pyrogram package
-- Program the bot to activate the trained model on incoming messages.
-- Deploy the model to a Telegram group-chat to see it working in action
-
-**What will be the “deliverable”?**
-
-An effective NLP model capable of detecting and deleting spam messages in Telegram group-chats. It will be deployed to an active group-chat to test it out.
-
-**What is the “value proposition”? i.e. Who will benefit and how?**
-
-Public group-chats admins who want to make their group-chats a safe place free of spams and unwanted messages that clutter it up.
+| :---:   | :-: |
+| label | whether the message is classified as `spam` or not spam, `ham`|
+| message | the English message to classify in text format |
