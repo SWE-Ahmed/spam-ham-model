@@ -1,6 +1,6 @@
 # Messages Monitoring Model Capable of Detecting and Deleting Spam in Public Telegram Group Chats
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png =250x250)
+<a href="url"><img src="[http://url.to/image.png](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png)" align="center" height="250" width="250" ></a>
 
 ## Repository Structure
 ```
