@@ -128,6 +128,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#model-conclusion" id="toc-model-conclusion" class="nav-link" data-scroll-target="#model-conclusion">Model Conclusion</a></li>
   </ul></li>
   <li><a href="#model-deployment" id="toc-model-deployment" class="nav-link" data-scroll-target="#model-deployment">Model Deployment</a></li>
+  <li><a href="#problems-associated-with-current-solution" id="toc-problems-associated-with-current-solution" class="nav-link" data-scroll-target="#problems-associated-with-current-solution">Problems Associated with Current Solution</a></li>
+  <li><a href="#future-development" id="toc-future-development" class="nav-link" data-scroll-target="#future-development">Future Development</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -204,7 +206,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the distribution of the examples in each class</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">7</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">6</span>))</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>sns.countplot(x<span class="op">=</span><span class="st">'label'</span>, data<span class="op">=</span>sms_big)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of the Messages'</span>)</span>
@@ -215,7 +217,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output cell-output-display">
 <div id="fig-class" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="capstone_report_files/figure-html/fig-class-output-1.png" width="833" height="587" class="figure-img"></p>
+<p><img src="capstone_report_files/figure-html/fig-class-output-1.png" width="759" height="515" class="figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 1: The imbalance between the 2 classes</figcaption><p></p>
 </figure>
 </div>
@@ -305,19 +307,19 @@ Vectorized version:
      0    0    0    0    0]]
 
 Embedded version:
-[[[ 0.04898497 -0.01979478  0.02217828 ... -0.0048638   0.03710017
-   -0.0137341 ]
-  [-0.03315722  0.01505386 -0.00147885 ...  0.0020563   0.00657374
-   -0.00327561]
-  [-0.02772429 -0.02913868 -0.00407239 ...  0.0012068   0.04175544
-   -0.03214341]
+[[[-0.04009664 -0.0182348   0.04175608 ...  0.01563163 -0.04268491
+   -0.00099881]
+  [-0.02363955  0.01625723 -0.03082242 ... -0.00070429 -0.0444646
+    0.00976185]
+  [-0.04665051 -0.00272837 -0.01892921 ... -0.00298215 -0.012444
+    0.0101974 ]
   ...
-  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
-   -0.00786297]
-  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
-   -0.00786297]
-  [-0.02788825  0.03206656 -0.03664351 ...  0.01791367  0.0136431
-   -0.00786297]]]</code></pre>
+  [ 0.01520063  0.00729283 -0.01572526 ... -0.01472719  0.0357582
+   -0.0234138 ]
+  [ 0.01520063  0.00729283 -0.01572526 ... -0.01472719  0.0357582
+   -0.0234138 ]
+  [ 0.01520063  0.00729283 -0.01572526 ... -0.01472719  0.0357582
+   -0.0234138 ]]]</code></pre>
 </div>
 </div>
 <p>Finally, we can now proceed to model development, as we have completed all the preprocessing necessary on our data.</p>
@@ -1120,9 +1122,27 @@ Model 6
 </ul>
 <p>For more info on the deployment implementation, see the <code>app</code> directory.</p>
 </section>
+<section id="problems-associated-with-current-solution" class="level2">
+<h2 class="anchored" data-anchor-id="problems-associated-with-current-solution">Problems Associated with Current Solution</h2>
+<p>As we can see from the performance of our model in classifying incoming messages in these Telegram chats, we notice that sometimes there are case were the model misclassifies a non-spam message for a spam message. This is due to several factors that have limited our model’s performance in such way, mainly include:</p>
+<ul>
+<li><strong>Unrepresentable Data</strong>: This is very probelmatic for our implementation, as the data that the model was trained on turned out to be not representable of the whole diversity and strucutre of the messages in sent by users in Telegram.</li>
+<li><strong>Not Enough Data</strong>: As we mentioned in data preprocessing phase, because we had this problem of class imbalance and we had the need to undersample our data to level it with out minority class, many examples were left out and were left with only very few training data compared to how we started with. As a result, our model could not successfully learn the distinguishable points between spam and not spam messages.</li>
+<li><strong>Nature of Spam Messages</strong>: As we can see in our modern day social media activity, we can all agree that the spam messages circulated between users and groupchats are not of consistent structure, and they tend to learn and improve their delivery of spam messages to further improve their chance of manipulating the user. It is quite hard to get hands on such data from various sources to ensure variability in the spam messages, and even harder in making our model keep up with the new types of spam messages.</li>
+</ul>
+</section>
+<section id="future-development" class="level2">
+<h2 class="anchored" data-anchor-id="future-development">Future Development</h2>
+<p>Despite the ups and downs of this project, there have been many new ideas and thoughts in mind throughout the development phase (raises some ethical concerns):</p>
+<ul>
+<li><strong>Scraping Messages for new Training Data in Telegram Groupchats</strong>: One of the main problems in this project was that the data acquired did not really match the structure of the messages sent in Telegram chats. As a result, to fix this for future needs, having a data purely from Telegram groupchats will definitely improve the model performance. However, before scraping the messages from any groupchats, the members should be notified of such action, and their permission must be given to commence such operation.</li>
+<li><strong>Storing Successfully Predicted Messages in a Data Warehouse</strong>: Instead of having to go through the ethical concerns with scraping data from Telegram groupchats, we can make the deployed Bot in a groupchat store the successful predicted spam messages in some place like a data warehouse (csv file, on the cloud), where we can later use this set of data to better optimize our model’s performance.</li>
+<li><strong>Improving the Handling of Spam by the Bot</strong>: The current handling is done through giving warnings to potential spam senders, and banning them once a 3rd warning is issued. Hoever, this handling could be further improved through just flagging the message as spam, and if checked by the admins of the groupchat and confirmed to be spam, then by a single command we can have the Bot ban the user and therefore get rid of the spam messages.</li>
+</ul>
+</section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>In conclusion,</p>
+<p>In conclusion, the journey from acquiring the data from various sources in order to increase model’s overall performance, to deploying a working ML model implemented in a Telegram Bot to a groupchat, resulted in meeting the expectations that were set out from the start for this project. Despite the problems associated with the low data used due to the heavily class imbalance, and the possible improper classification due to the unrepresentable data, the project is still of viable and use, and with more work and future development on the data and handling of spam by the Bot, the project could easily step up its performance to go beyoned and exceed epxectations of the project.</p>
 </section>
 
 </main>

@@ -94,7 +94,7 @@ However, the data was heavily imbalanced, especially in the original sources, wh
 #| fig-cap: "The imbalance between the 2 classes"
 
 # plot the distribution of the examples in each class
-plt.figure(figsize=(10,7))
+plt.figure(figsize=(9,6))
 sns.countplot(x='label', data=sms_big)
 
 plt.title('Distribution of the Messages')
@@ -506,6 +506,22 @@ The saved model can be easily loaded up and get it ready for prediction through 
 
 For more info on the deployment implementation, see the `app` directory.
 
+## Problems Associated with Current Solution
+
+As we can see from the performance of our model in classifying incoming messages in these Telegram chats, we notice that sometimes there are case were the model misclassifies a non-spam message for a spam message. This is due to several factors that have limited our model's performance in such way, mainly include:
+
+- **Unrepresentable Data**: This is very probelmatic for our implementation, as the data that the model was trained on turned out to be not representable of the whole diversity and strucutre of the messages in sent by users in Telegram.
+- **Not Enough Data**: As we mentioned in data preprocessing phase, because we had this problem of class imbalance and we had the need to undersample our data to level it with out minority class, many examples were left out and were left with only very few training data compared to how we started with. As a result, our model could not successfully learn the distinguishable points between spam and not spam messages.
+- **Nature of Spam Messages**: As we can see in our modern day social media activity, we can all agree that the spam messages circulated between users and groupchats are not of consistent structure, and they tend to learn and improve their delivery of spam messages to further improve their chance of manipulating the user. It is quite hard to get hands on such data from various sources to ensure variability in the spam messages, and even harder in making our model keep up with the new types of spam messages.
+
+## Future Development
+
+Despite the ups and downs of this project, there have been many new ideas and thoughts in mind throughout the development phase (raises some ethical concerns):
+
+- **Scraping Messages for new Training Data in Telegram Groupchats**: One of the main problems in this project was that the data acquired did not really match the structure of the messages sent in Telegram chats. As a result, to fix this for future needs, having a data purely from Telegram groupchats will definitely improve the model performance. However, before scraping the messages from any groupchats, the members should be notified of such action, and their permission must be given to commence such operation.
+- **Storing Successfully Predicted Messages in a Data Warehouse**: Instead of having to go through the ethical concerns with scraping data from Telegram groupchats, we can make the deployed Bot in a groupchat store the successful predicted spam messages in some place like a data warehouse (csv file, on the cloud), where we can later use this set of data to better optimize our model's performance.
+- **Improving the Handling of Spam by the Bot**: The current handling is done through giving warnings to potential spam senders, and banning them once a 3rd warning is issued. Hoever, this handling could be further improved through just flagging the message as spam, and if checked by the admins of the groupchat and confirmed to be spam, then by a single command we can have the Bot ban the user and therefore get rid of the spam messages.
+
 ## Conclusion
 
-In conclusion, 
+In conclusion, the journey from acquiring the data from various sources in order to increase model's overall performance, to deploying a working ML model implemented in a Telegram Bot to a groupchat, resulted in meeting the expectations that were set out from the start for this project. Despite the problems associated with the low data used due to the heavily class imbalance, and the possible improper classification due to the unrepresentable data, the project is still of viable and use, and with more work and future development on the data and handling of spam by the Bot, the project could easily step up its performance to go beyoned and exceed epxectations of the project.
