@@ -1,8 +1,8 @@
 # Messages Monitoring Model Capable of Detecting and Deleting Spam in Public Telegram Group Chats
 <p align="center">
-<a href="url"><img src="https://docs.pyrogram.org/_static/pyrogram.png" align="center" height="250" width="250" ></a>
-<a href="url"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" align="center" height="250" width="250" ></a>
-<a href="url"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-tensorflow-icon.png" align="center" height="250" width="250" ></a>
+<a href="url"><img src="https://pyrogram.org/img/pyrogram-logo.png" align="center" height="150" width="150" ></a>
+<a href="url"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" align="center" height="150" width="150" ></a>
+<a href="url"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-tensorflow-icon.png" align="center" height="150" width="150" ></a>
 </p>
 
 ## Repository Structure
